@@ -1,0 +1,72 @@
+.button-style {
+    background-color: orangered;
+    width: 100px;
+    height: 60px;
+    color: white;
+}
+
+.hidden {
+    display: none;
+}
+
+.padding-bottom {
+    padding-bottom: 30px;
+}
+
+h1 {
+    font-size: 50px;
+    color: paleturquoise;
+    text-align: center;
+    background-color: purple;
+
+}
+
+p {
+    font-size: 18px;
+    text-align: center;
+    background-color:lightcoral;
+    color:whitesmoke;
+}
+
+body {
+	height: 500px;
+	width: auto;
+	background-color: plum;
+    color: white;
+    margin:40px
+}
+
+
+.powderblue-border{
+	border: 10px solid powderblue;
+}
+
+img{
+    height: 500px;
+	width: 500px;
+
+}
+.wide-image{
+    height: 500px;
+	width: 1000px;
+}
+.borderpara {
+border-style: solid;
+border-width: 10px;
+border-color:orange;
+
+}
+
+h2{
+    color: purple;
+}
+
+h3{
+    background-color:lightseagreen;
+    font-size: 30px;
+    color: paleturquoise;
+    text-align: center;
+    border-style: solid;
+    border-width: 10px;
+    border-color:purple;
+}
