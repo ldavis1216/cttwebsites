@@ -14,18 +14,26 @@
 <script type="text/javascript">
 
     var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: create, update: update });
+    var score = 0;
+     var scoreText;
+     var gameTime = 30;
+     var countdown;
+     var timeUpText = '';
 
     //These three functions are required for phaser!
     //Preload loads everything your game needs - sprites, images, etc
     function preload() {
-        game.load.image('sky', 'assets/pinkys.jpg');
-        game.load.image('ground', 'assets/pinkpink.jpg');
-        game.load.spritesheet('hp', 'assets/hero.png', 79, 95);
-
+        game.load.image('sky', 'assets/beach.jpg');
+        game.load.image('ground', 'assets/plainblue.jpg');
+        game.load.image( 'drinks', 'assets/cocktails.png');
+        game.load.spritesheet('hp', 'assets/dude.png', 79, 95);
+        game.load.image( 'bombs', 'assets/bomb.png');
+       
     }
 
     //Create sets up your game for you - most of your code will probably be here!
     function create() {
+
 
         //add the sky
         game.add.sprite(0, 0, 'sky');
@@ -35,6 +43,8 @@
 
         //enable physics on the platforms group
         platforms.enableBody = true;
+
+
 
         // Here we create the ground.
         var ground = platforms.create(0, game.world.height - 64, 'ground');
@@ -47,7 +57,7 @@
 
         //add player
         //the first 2 arguments are x and y, then the last is the key of your image
-        player = game.add.sprite(32, game.world.height - 500, 'hp');
+        player = game.add.sprite(32, game.world.height - 200, 'hp');
 
         //enable physics on player
         game.physics.arcade.enable(player);
@@ -62,6 +72,33 @@
         //  Our controls.
         cursors = game.input.keyboard.createCursorKeys();
 
+
+        drinks = game.add.group();
+
+        drinks.enableBody = true;
+
+
+        bombs = game.add.group();
+
+        bombs.enableBody = true;
+
+        
+        scoreText = game.add.text(16, 16, 'score: 0', { fontSize: '32px', fill: '#000' });
+        timeText = game.add.text(600, 16, 'Time: ' + gameTime, {fontSize: '32px', fill: '#000'});
+
+
+
+
+
+        timer = game.time.create(false);
+        timer.start();
+
+        timeText.text = 'Time: ' + countdown;
+        countdownTimer = timer.loop(Phaser.Timer.SECOND, updateCountdown);
+        countdown = gameTime;
+
+        timer.loop(700, createdrinks);
+        timer.loop(700, createbombs);
     }
 
     //Update is continously called while the game is being played - add things like
@@ -70,6 +107,7 @@
 
     //check if player is touching the platform - stops from falling through ground
     game.physics.arcade.collide(player, platforms);
+    
 
       //  Reset the players velocity (movement)
       player.body.velocity.x = 0;
@@ -98,13 +136,88 @@
 
             player.frame = 0;
         }
-
+        game.physics.arcade.overlap(player, drinks, collectdrinks, null, this);
+        game.physics.arcade.overlap(player, bombs, collectbombs, null, this);
     }
 
     //add any extra functions you need here! 
+    function collectdrinks (player, drinks) {
 
+    // Removes the star from the screen
+    drinks.kill();
+    score += 10;
+    scoreText.text = 'Score: ' + score;
 
+    
+}
+function createdrinks(){
+    var xLocation = Math.random() * 800;
+    var drink = drinks.create(xLocation, 0, 'drinks');
+    drink.body.gravity.y = 6;
+    drink.body.bounce,y = 0.7 + Math.random() * 0.2;
+
+}
+
+function createbombs() {
+    var xLocation = Math.random() * 800;
+    var bomb = bombs.create(xLocation, 0, 'bombs');
+    bomb.body.gravity.y = 6;
+    bomb.body.bounce.y = 0.7 + Math.random() * 0.2;
+}
+function collectbombs (player,bombs){
+    bombs.kill();
+    score -= 30;
+    scoreText.text = 'Score: ' + score;
+
+}
+function updateCountdown() {
+        //decrease the countdown value
+        countdown = countdown - 1;
+        //update the display text
+        timeText.text = 'Time: ' + countdown;
+}
+
+function timeUp() {
+        //stop the loops
+        timer.stop();
+        //get rid of all the active snitches
+        snitches.forEach(function(element) {
+            element.kill();
+        });
+        bludgers.forEach(function(element) {
+            element.kill();
+        });
+        //display time up message
+        timeUpText = game.add.text(350, 250, 'Time\'s up!', { fontSize: '32px', fill: '#000' });
+
+}
+function startGame(){
+        //set countdown to our global "game time" variable
+        countdown = gameTime;
+        timeText.text = 'Time: ' + countdown;
+        
+        //initialize score to 0 and update score text
+        score = 0;
+        scoreText.text = 'Score: ' + score;
+        //if we are showing time up text, stop showing
+        if(timeUpText) {
+            timeUpText.visible = false;
+        }
+        //don't show intro text
+        introText.visible = false;
+        //create new snitches in a loop, every 400 milliseconds
+        timer.loop(400, createSnitch);
+        timer.loop(2000, createBludger);
+        //create a loop to update the countdown text, update every second and call updateCountdown
+        countdownTimer = timer.loop(Phaser.Timer.SECOND, updateCountdown);
+        //add the timer event of game time * 1000 (since it is in milliseconds) and call timeUp when its done
+        timer.add(gameTime*1000, timeUp, this);
+        //start the timer event
+        timer.start();
+        timeText.visible = true;
+        scoreText.visible = true;
+    }
 </script>
-
+ 
 </body>
 </html>
